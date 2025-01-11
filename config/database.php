@@ -118,7 +118,7 @@ return [
       'driver'    => 'mysql',
       'host'      => env('STUDENTS_DB_HOST', '127.0.0.1'),
       'port'      => env('STUDENTS_DB_PORT', '3306'),
-      'database'  => env('STUDENTS_DB_DATABASE', 'students'),
+      'database'  => env('STUDENTS_DB_DATABASE', 'std_basic'),
       'username'  => env('STUDENTS_DB_USERNAME', 'root'),
       'password'  => env('STUDENTS_DB_PASSWORD', ''),
       'charset'   => 'utf8mb4',

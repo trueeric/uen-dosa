@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UenStudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,6 +32,10 @@ Route::middleware('auth')->group(function () {
   // API 路由用於獲取資料庫狀態
   Route::get('/api/database-status', [DatabaseTestController::class, 'checkConnections'])
     ->name('api.database.status');
+
+  // 學生基本資料
+  Route::get('/students', [UenStudentController::class, 'index'])
+    ->name('students.index');
 });
 
 require __DIR__ . '/auth.php';
