@@ -21,7 +21,7 @@ Table uen_courses {
 }
 
 
-// 班級表
+// 班級表 連舊的來用就好
 Table uen_classes {
   id integer [primary key]
   eclass varchar -- 班級代碼：例如 H101, J102
@@ -33,7 +33,7 @@ Table uen_classes {
   updated_at timestamp
 }
 
-// 學生表
+// 學生表 連舊的來用就好
 Table students {
   id integer [primary key]
   user_id integer [ref: > users.id]
@@ -43,12 +43,12 @@ Table students {
   updated_at timestamp
 }
 
-// 違規紀錄表
-Table violations {
+// 評分紀錄表
+Table score_records {
   id integer [primary key]
   student_id integer [ref: > students.id]
   recorded_by integer [ref: > users.id]
-  violation_type_id integer [ref: > violation_types.id]
+  score_code varchar [ref: > score_items.score_code]
   description text
   date date
   status enum // pending, confirmed, cancelled
@@ -56,12 +56,28 @@ Table violations {
   updated_at timestamp
 }
 
-// 違規類型表
-Table violation_types {
+// 評分項目表 score_items score_code+score_type_code unique
+Table  {
   id integer [primary key]
-  name varchar
+  score_code varchar
+  score_type_code integer [ref: > score_types.code]
+  score_item varchar
   description text
-  points integer
+  points float
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+// 評分類別表 score_types
+Table  {
+  id integer [primary key]
+  score_type_code varchar
+  score_type varchar
+  description text
+  points float
+  sort tinyint
+  is_active boolean
   created_at timestamp
   updated_at timestamp
 }

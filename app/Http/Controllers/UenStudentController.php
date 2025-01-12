@@ -11,8 +11,30 @@ class UenStudentController extends Controller {
    * Display a listing of the resource.
    */
   public function index() {
-    $students = UenStudent::all();
-    return Inertia::render('UenStudent/Index', [
+
+    // 測試 uen_classes 資料表結構
+    // dd(DB::connection('uen_students_db')->getSchemaBuilder()->getColumnListing('uen_classes'));
+
+    // 先測試單一筆資料的關聯
+    // $student = UenStudent::with(['class.staff'])->first();
+    // dd($student->toArray());
+
+    // $students = UenStudent::take(50)->get();
+    $students = UenStudent::with(['class.staff'])
+      ->take(50)
+      ->get()
+      ->map(function ($student) {
+        return [
+          'id'                    => $student->id,
+          'student_no'            => $student->student_no,
+          'name'                  => $student->name,
+          'seat'                  => $student->seat,
+          'class_name'            => $student->class->class_name ?? null,
+          'homeroom_teacher_name' => $student->class->staff->name ?? null,
+        ];
+      });
+    // dd($students);
+    return Inertia::render('Students/Index', [
       'students' => $students,
     ]);
   }

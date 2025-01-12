@@ -133,7 +133,7 @@ return [
       'driver'    => 'mysql',
       'host'      => env('STAFF_DB_HOST', '127.0.0.1'),
       'port'      => env('STAFF_DB_PORT', '3306'),
-      'database'  => env('STAFF_DB_DATABASE', 'yh_staff'),
+      'database'  => env('STAFF_DB_DATABASE', 'yhstaff'),
       'username'  => env('STAFF_DB_USERNAME', 'root'),
       'password'  => env('STAFF_DB_PASSWORD', ''),
       'charset'   => 'utf8mb4',
