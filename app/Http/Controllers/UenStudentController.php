@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\UenStudent;
+use App\Models\UenStudentView;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,23 +15,25 @@ class UenStudentController extends Controller {
     // dd(DB::connection('uen_students_db')->getSchemaBuilder()->getColumnListing('uen_classes'));
 
     // 先測試單一筆資料的關聯
-    // $student = UenStudent::with(['class.staff'])->first();
+    // $student = UenStudentView::first();
+    // $student = UenStudentView::with(['class.staff'])->first();
     // dd($student->toArray());
 
     // $students = UenStudent::take(50)->get();
-    $students = UenStudent::with(['class.staff'])
+    $students = UenStudentView::with(['class.staff'])
       ->take(50)
       ->get()
       ->map(function ($student) {
         return [
-          'id'                    => $student->id,
+          'id'                    => $student->student_id,
           'student_no'            => $student->student_no,
-          'name'                  => $student->name,
-          'seat'                  => $student->seat,
+          'name'                  => $student->student_name,
+          'seat'                  => $student->seat_no,
           'class_name'            => $student->class->class_name ?? null,
           'homeroom_teacher_name' => $student->class->staff->name ?? null,
         ];
       });
+
     // dd($students);
     return Inertia::render('Students/Index', [
       'students' => $students,
