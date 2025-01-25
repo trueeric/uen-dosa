@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ScoreType extends Model
+class UenScoreType extends Model
 {
     //
 }

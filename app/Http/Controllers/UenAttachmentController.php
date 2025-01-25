@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ScoreItem;
+use App\Models\UenAttachment;
 use Illuminate\Http\Request;
 
-class ScoreItemController extends Controller
+class UenAttachmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ScoreItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ScoreItem $scoreItem)
+    public function show(UenAttachment $uenAttachment)
     {
         //
     }
@@ -42,7 +42,7 @@ class ScoreItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ScoreItem $scoreItem)
+    public function edit(UenAttachment $uenAttachment)
     {
         //
     }
@@ -50,7 +50,7 @@ class ScoreItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ScoreItem $scoreItem)
+    public function update(Request $request, UenAttachment $uenAttachment)
     {
         //
     }
@@ -58,7 +58,7 @@ class ScoreItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ScoreItem $scoreItem)
+    public function destroy(UenAttachment $uenAttachment)
     {
         //
     }

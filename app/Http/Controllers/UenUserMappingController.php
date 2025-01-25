@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ScoreType;
+use App\Models\UenUserMapping;
 use Illuminate\Http\Request;
 
-class ScoreTypeController extends Controller
+class UenUserMappingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ScoreTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ScoreType $scoreType)
+    public function show(UenUserMapping $uenUserMapping)
     {
         //
     }
@@ -42,7 +42,7 @@ class ScoreTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ScoreType $scoreType)
+    public function edit(UenUserMapping $uenUserMapping)
     {
         //
     }
@@ -50,7 +50,7 @@ class ScoreTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ScoreType $scoreType)
+    public function update(Request $request, UenUserMapping $uenUserMapping)
     {
         //
     }
@@ -58,7 +58,7 @@ class ScoreTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ScoreType $scoreType)
+    public function destroy(UenUserMapping $uenUserMapping)
     {
         //
     }

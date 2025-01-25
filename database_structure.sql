@@ -113,7 +113,7 @@ Table score_records {
   id integer [primary key]
   student_id integer [ref: > students.id]
   recorded_by integer [ref: > users.id]
-  score_code varchar [ref: > score_items.score_code]
+  score_no varchar [ref: > score_items.score_no]
   description text
   date date
   status enum // pending, confirmed, cancelled
@@ -156,12 +156,12 @@ Table  {
 
 // 評分類別表 score_types
 Table  {
-  id integer [primary key]
-  score_type_code varchar
-  score_type varchar
-  memo varchar(190)
-  points float
-  sort tinyint
+  id smallint UNSIGNED [primary key]
+  cate_no varchar(10)    -- 分類 t01秩序類,t02整潔類
+  type_no tinyint UNSIGNED    -- 類別1~5,21~22
+  name varchar(30)    -- 類別名稱
+  memo varchar(190) -- 備註
+  sort tinyint   UNSIGNED
   is_active boolean
   created_at timestamp
   updated_at timestamp

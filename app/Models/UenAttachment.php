@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ScoreRecord extends Model
+class UenAttachment extends Model
 {
     //
 }

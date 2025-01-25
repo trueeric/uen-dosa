@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ScoreRecord;
+use App\Models\UenScoreItem;
 use Illuminate\Http\Request;
 
-class ScoreRecordController extends Controller
+class UenScoreItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ScoreRecordController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ScoreRecord $scoreRecord)
+    public function show(UenScoreItem $uenScoreItem)
     {
         //
     }
@@ -42,7 +42,7 @@ class ScoreRecordController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ScoreRecord $scoreRecord)
+    public function edit(UenScoreItem $uenScoreItem)
     {
         //
     }
@@ -50,7 +50,7 @@ class ScoreRecordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ScoreRecord $scoreRecord)
+    public function update(Request $request, UenScoreItem $uenScoreItem)
     {
         //
     }
@@ -58,7 +58,7 @@ class ScoreRecordController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ScoreRecord $scoreRecord)
+    public function destroy(UenScoreItem $uenScoreItem)
     {
         //
     }
