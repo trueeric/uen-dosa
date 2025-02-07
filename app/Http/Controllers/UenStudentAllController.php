@@ -5,7 +5,7 @@ use App\Models\UenStudentView;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class UenStudentController extends Controller {
+class UenStudentAllController extends Controller {
   /**
    * Display a listing of the resource.
    */

@@ -34,8 +34,8 @@ Route::middleware('auth')->group(function () {
     ->name('api.database.status');
 
   // 學生基本資料
-  Route::get('/students', [UenStudentController::class, 'index'])
-    ->name('students.index');
+  Route::get('/uen-students', [UenStudentController::class, 'index'])
+    ->name('uen-students.index');
 });
 
 require __DIR__ . '/auth.php';

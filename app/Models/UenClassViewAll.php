@@ -4,12 +4,16 @@ namespace App\Models;
 use App\Models\UenScoreRecord;
 use Illuminate\Database\Eloquent\Model;
 
-class UenClassView extends Model {
+class UenClassViewAll extends Model {
   protected $connection = 'uen_students_db';
-  protected $table      = 'v_uen_current_semester_classes';
+
+  protected $table = 'v_uen_semester_classes_all';
+
+  // 宣告模型為唯讀
+  protected $isReadOnly = true;
 
   public function staff() {
-    return $this->belongsTo(UenStaffView::class, 'homeroom_teacher_id', 'staff_no');
+    return $this->belongsTo(UenStaffViewAll::class, 'homeroom_teacher_id', 'staff_no');
   }
 
   // UenScoreRecord 多態關聯
