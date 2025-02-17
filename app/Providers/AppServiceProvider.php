@@ -19,8 +19,10 @@ class AppServiceProvider extends ServiceProvider {
   public function boot(): void {
     Vite::prefetch(concurrency: 3);
     Relation::morphMap([
-      'student' => 'App\Models\UenStudentView',
-      'class'   => 'App\Models\UenClassView',
+      // 'student' => 'App\Models\UenStudentView',
+      // 'class'   => 'App\Models\UenClassView',
+      'student' => 'App\Models\UenCurrentSemesterStudent',
+      'class'   => 'App\Models\UenCurrentSemesterClass',
     ]);
   }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UenScoreRecordController;
 use App\Http\Controllers\UenStudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,18 @@ Route::middleware('auth')->group(function () {
   // 學生基本資料
   Route::get('/uen-students', [UenStudentController::class, 'index'])
     ->name('uen-students.index');
+
+  // 榮譽競賽評分 - 完整的資源路由
+  Route::resource('uen-score-records', UenScoreRecordController::class)
+    ->names([
+      'index'   => 'uen-score-records.index',
+      'create'  => 'uen-score-records.create',
+      'store'   => 'uen-score-records.store',
+      'show'    => 'uen-score-records.show',
+      'edit'    => 'uen-score-records.edit',
+      'update'  => 'uen-score-records.update',
+      'destroy' => 'uen-score-records.destroy',
+    ]);
 });
 
 require __DIR__ . '/auth.php';
