@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
   // 學生基本資料
   Route::get('/uen-students', [UenStudentController::class, 'index'])
     ->name('uen-students.index');
+  Route::get('/uen-students/create', [UenStudentController::class, 'create'])
+    ->name('uen-students.create');
 
   // 榮譽競賽評分 - 完整的資源路由
   Route::resource('uen-score-records', UenScoreRecordController::class)

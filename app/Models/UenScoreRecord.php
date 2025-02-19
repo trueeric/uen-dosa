@@ -51,6 +51,7 @@ class UenScoreRecord extends Model {
         'usi.name',
         'usi.points',
         'uen_score_records.times',
+        DB::raw('round((CAST(usi.points AS DECIMAL(10, 2)) * CAST(uen_score_records.times AS DECIMAL(10, 2))),1) as subtotal'),
         'uen_score_records.created_at',
       ])
       ->orderBy('uen_score_records.id', 'desc');

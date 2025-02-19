@@ -1,7 +1,9 @@
-export function useMessage() {
-  const showMessage = (message, type = 'info') => {
-      console.log(`[${type.toUpperCase()}]: ${message}`);
-  };
+import { ElMessage } from "element-plus";
 
-  return { showMessage };
+export function useMessage() {
+    const success = (message) => ElMessage.success(message);
+    const error = (message) => ElMessage.error(message);
+
+    return { success, error };
 }
+

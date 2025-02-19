@@ -44,7 +44,7 @@ class UenStudentController extends Controller {
    * Show the form for creating a new resource.
    */
   public function create() {
-    //
+    return Inertia::render('UenStudents/Create');
   }
 
   /**
@@ -57,28 +57,28 @@ class UenStudentController extends Controller {
   /**
    * Display the specified resource.
    */
-  public function show(UenStudent $uenStudent) {
+  public function show(UenStudentView $uenStudent) {
     //
   }
 
   /**
    * Show the form for editing the specified resource.
    */
-  public function edit(UenStudent $uenStudent) {
+  public function edit(Request $request, UenStudentView $uenStudent) {
     //
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, UenStudent $uenStudent) {
+  public function update(Request $request, UenStudentView $uenStudent) {
     //
   }
 
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(UenStudent $uenStudent) {
+  public function destroy(UenStudentView $uenStudent) {
     //
   }
 }
