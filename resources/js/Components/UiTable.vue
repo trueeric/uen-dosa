@@ -82,6 +82,7 @@ const handlePageChange = (page) => {
 .ui-table td {
   padding: 8px;
   border: 1px solid #ddd;
+  /* text-align: right; */
   /* text-align: left; */
 }
 
@@ -90,7 +91,7 @@ const handlePageChange = (page) => {
 }
 
 .ui-table-loading {
-  text-align: center;
+  /* text-align: center; */
   padding: 1rem;
 }
 

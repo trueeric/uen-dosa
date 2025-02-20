@@ -20,6 +20,14 @@ class UenScoreRecord extends Model {
     return $this->targetable?->name;
   }
 
+  // 計算周別的 scope
+  public function scopeWithWeekNo($query) {
+    return $query->addSelect([
+      '*',
+      DB::raw('FLOOR(DATEDIFF(score_date, (SELECT first_monday FROM std_basic.v_uen_current_semester WHERE semester = uen_score_records.semester LIMIT 1)) / 7) + 1 as week_no'),
+    ]);
+  }
+
   // 優化 scope
   public function scopeWithTargetInfo($query) {
     // 從視圖取得當前學期值
@@ -52,7 +60,11 @@ class UenScoreRecord extends Model {
         'usi.points',
         'uen_score_records.times',
         DB::raw('round((CAST(usi.points AS DECIMAL(10, 2)) * CAST(uen_score_records.times AS DECIMAL(10, 2))),1) as subtotal'),
+        'uen_score_records.score_date',
         'uen_score_records.created_at',
+        // 添加周別計算
+        DB::raw('FLOOR(DATEDIFF(uen_score_records.score_date, (SELECT first_monday FROM std_basic.v_uen_current_semester WHERE semester = uen_score_records.semester LIMIT 1)) / 7) + 1 as week_no'),
+
       ])
       ->orderBy('uen_score_records.id', 'desc');
   }

@@ -9,7 +9,7 @@ import { useDateFormatter } from "@/composables/useDateFormatter";
 const { props } = usePage();
 const records = ref(props.records);
 const pagination = reactive(props.pagination);
-const semesterOptions = ref(props.semesterOptions);
+const weekOptions = ref(props.weekOptions);
 
 // 日期格式化
 const { formatDate } = useDateFormatter();
@@ -17,7 +17,7 @@ const { formatDate } = useDateFormatter();
 // 搜尋表單
 const searchForm = reactive({
   target_no: "",
-  semester: "",
+  week_no: "",
   date_range: [],
 });
 
@@ -32,7 +32,7 @@ const handleSearch = () => {
     {
       page: 1,
       target_no: searchForm.target_no,
-      semester: searchForm.semester,
+      week_no: searchForm.week_no,
       start_date: searchForm.date_range[0],
       end_date: searchForm.date_range[1],
     },
@@ -94,6 +94,7 @@ const handleDelete = (row) => {
 
 <template>
   <!-- <pre>{{ records.data[0] }}</pre> -->
+  <!-- <pre>{{ weekOptions }}</pre> -->
   <div class="container mx-auto p-4">
     <div class="mb-4 flex justify-between items-center">
       <h1 class="text-2xl font-bold">成績記錄管理</h1>
@@ -130,16 +131,16 @@ const handleDelete = (row) => {
         </el-input>
 
         <el-select
-          v-model="searchForm.semester"
-          placeholder="選擇學期"
+          v-model="searchForm.week_no"
+          placeholder="選擇周別"
           clearable
         >
           <el-option
-            v-for="option in semesterOptions"
+            v-for="option in weekOptions"
             :key="option.value"
             :label="option.label"
             :value="option.value"
-            placeholder="選擇學期"
+            placeholder="選擇周別"
           />
         </el-select>
         <UiDatePicker
@@ -158,17 +159,15 @@ const handleDelete = (row) => {
           { title: '學期', key: 'semester', width: 120 },
           { title: '班級', key: 'class_no', slot: true },
           { title: '評分項目', key: 'score_info', slot: true },
-          { title: '次數', key: 'times', width: 100, align: 'right' },
+          { title: '次數', key: 'times', width: 100 },
           {
             title: '小計',
             key: 'subtotal',
             slot: true,
             width: '100px',
-            align: 'right', // 內容置中
-            headerAlign: 'center', // 標題置中
           },
 
-          { title: '建立時間', key: 'created_at', slot: true, width: 150 },
+          { title: '評分日期', key: 'score_date', slot: true, width: 150 },
           {
             title: '操作',
             key: 'actions',
@@ -208,20 +207,24 @@ const handleDelete = (row) => {
 
         <!-- 次數 -->
         <template #times="{ row }">
-          <div class="flex items-center">
+          <div class="text-center">
             <span>{{ row.times }}</span>
           </div>
         </template>
 
         <!-- 自定義小計插槽 -->
         <template #subtotal="{ row }">
-          <span>{{ row.subtotal }}</span>
-          <!-- 計算小計 -->
+          <div class="text-right pr-4">
+            <span>{{ row.subtotal }}</span>
+            <!-- 計算小計 -->
+          </div>
         </template>
 
         <!-- 建立時間 -->
-        <template #created_at="{ row }">
-          <span>{{ formatDate(row.created_at)[2] }}</span>
+        <template #score_date="{ row }">
+          <div class="text-center">
+            <span>{{ formatDate(row.score_date)[3] }}</span>
+          </div>
         </template>
 
         <!-- 操作欄位 -->

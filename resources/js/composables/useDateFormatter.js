@@ -14,6 +14,7 @@ export const useDateFormatter = () => {
       dayjs(date).format("YYYY-MM-DD"), // 格式 1: 2025-02-19
       dayjs(date).format("YYYY-MM-DD HH:mm:ss"), // 格式 2: 2025-02-19 17:04:51
       dayjs(date).format("MMDD HHmm"), // 格式 3: 0219 1704
+      dayjs(date).format("MMDD"), // 格式 4: 0219
     ];
   };
 
