@@ -62,7 +62,17 @@ class UenScoreRecordController extends Controller {
     ];
 
     return Inertia::render('UenScoreRecords/Index', [
-      'records'         => $records,
+      'records'         => [
+        'data' => $records->items(),
+        'meta' => [
+          'current_page' => $records->currentPage(),
+          'last_page'    => $records->lastPage(),
+          'per_page'     => $records->perPage(),
+          'total'        => $records->total(),
+          'from'         => $records->firstItem(),
+          'to'           => $records->lastItem(),
+        ],
+      ],
       'filters'         => $request->only(['target_no', 'start_date', 'end_date', 'week_no']),
       'weekOptions'     => $weekOptions,
       'currentSemester' => $currentSemester,

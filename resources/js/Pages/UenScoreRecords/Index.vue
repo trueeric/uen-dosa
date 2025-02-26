@@ -52,9 +52,9 @@ const weekOptions = ref(props.weekOptions);
 
 // 分頁設置
 const pagination = reactive({
-  current_page: props.records?.meta?.current_page || 1,
-  per_page: props.records?.meta?.per_page || 10,
-  total: props.records?.meta?.total || 0,
+  current_page: Number(props.records?.meta?.current_page) || 1,
+  per_page: Number(props.records?.meta?.per_page) || 10,
+  total: Number(props.records?.meta?.total) || 0,
 });
 
 // 日期格式化
@@ -72,13 +72,14 @@ const loading = ref(false);
 
 // 處理分頁大小變化
 const handleSizeChange = (val) => {
-  pagination.per_page = val;
+  pagination.per_page = Number(val);
+  pagination.current_page = 1; // 切換每頁顯示數量時重置為第一頁
   handleSearch();
 };
 
 // 處理當前頁變化
 const handleCurrentChange = (val) => {
-  pagination.current_page = val;
+  pagination.current_page = Number(val);
   handleSearch();
 };
 
@@ -89,85 +90,76 @@ const handleSearch = () => {
   const [startDate, endDate] = searchForm.date_range || [null, null];
 
   // 建立查詢參數物件
-  const params = new URLSearchParams();
-
-  // 添加基本參數
-  params.append("page", pagination.current_page.toString());
-  params.append("per_page", pagination.per_page.toString());
+  const params = {
+    page: pagination.current_page,
+    per_page: pagination.per_page,
+  };
 
   // 條件性添加其他參數
   if (searchForm.target_no?.trim()) {
-    params.append("target_no", searchForm.target_no.trim());
+    params.target_no = searchForm.target_no.trim();
   }
 
   if (searchForm.week_no) {
-    params.append("week_no", searchForm.week_no.toString());
+    params.week_no = searchForm.week_no;
   }
 
   if (startDate) {
-    params.append("start_date", formatDate(startDate)[0]);
+    params.start_date = formatDate(startDate)[0];
   }
 
   if (endDate) {
-    params.append("end_date", formatDate(endDate)[0]);
+    params.end_date = formatDate(endDate)[0];
   }
 
-  router.get(route("uen-score-records.index"), Object.fromEntries(params), {
+  router.get(route("uen-score-records.index"), params, {
     preserveState: true,
     preserveScroll: true,
     onBefore: () => {
       loading.value = true;
     },
     onSuccess: (page) => {
-      // 添加安全檢查
       if (page.props.records) {
         records.value = page.props.records;
-        // 確保 meta 存在
+        // 更新分頁信息
         if (page.props.records.meta) {
-          pagination.current_page = page.props.records.meta.current_page || 1;
-          pagination.per_page = page.props.records.meta.per_page || 10;
-          pagination.total = page.props.records.meta.total || 0;
+          const meta = page.props.records.meta;
+          pagination.current_page = Number(meta.current_page);
+          pagination.per_page = Number(meta.per_page);
+          pagination.total = Number(meta.total);
         }
-
         ElMessage.success("搜尋成功");
       } else {
         console.error("No records found in response");
         ElMessage.warning("沒有找到相關記錄");
-
-        // 設置默認值
-        records.value = {
-          data: [],
-          meta: {
-            current_page: 1,
-            per_page: 10,
-            total: 0,
-          },
-        };
-
-        // 重置分頁
-        pagination.current_page = 1;
-        pagination.per_page = 10;
-        pagination.total = 0;
+        // 重置數據和分頁
+        resetDataAndPagination();
       }
     },
     onError: (errors) => {
       console.error("Search error:", errors);
       ElMessage.error("搜尋失敗：" + Object.values(errors).join(", "));
-
-      // 重置數據
-      records.value = {
-        data: [],
-        meta: {
-          current_page: 1,
-          per_page: 10,
-          total: 0,
-        },
-      };
+      resetDataAndPagination();
     },
     onFinish: () => {
       loading.value = false;
     },
   });
+};
+
+// 新增一個重置數據和分頁的輔助函數
+const resetDataAndPagination = () => {
+  records.value = {
+    data: [],
+    meta: {
+      current_page: 1,
+      per_page: 10,
+      total: 0,
+    },
+  };
+  pagination.current_page = 1;
+  pagination.per_page = 10;
+  pagination.total = 0;
 };
 
 // 重置搜尋
@@ -246,29 +238,40 @@ const handleSortChange = ({ prop, order }) => {
 watch(
   () => props.records,
   (newRecords) => {
-    records.value = newRecords;
-    if (newRecords?.meta) {
-      pagination.current_page = newRecords.meta.current_page;
-      pagination.per_page = newRecords.meta.per_page;
-      pagination.total = newRecords.meta.total;
+    if (newRecords) {
+      records.value = newRecords;
+      if (newRecords.meta) {
+        const meta = newRecords.meta;
+        pagination.current_page = Number(meta.current_page);
+        pagination.per_page = Number(meta.per_page);
+        pagination.total = Number(meta.total);
+      }
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 );
 
 onMounted(() => {
   // 從 URL 參數初始化搜尋表單
   const params = new URLSearchParams(window.location.search);
 
+  // 初始化分頁參數
+  if (params.has("page")) {
+    pagination.current_page = Number(params.get("page"));
+  }
+  if (params.has("per_page")) {
+    pagination.per_page = Number(params.get("per_page"));
+  }
+
+  // 初始化搜尋條件
   if (params.has("target_no")) {
     searchForm.target_no = params.get("target_no");
   }
-
   if (params.has("week_no")) {
     searchForm.week_no = params.get("week_no");
   }
 
-  // 如果有日期參數，設置日期範圍
+  // 初始化日期範圍
   const start_date = params.get("start_date");
   const end_date = params.get("end_date");
   if (start_date && end_date) {
@@ -301,6 +304,9 @@ defineExpose({
     <div v-if="debug" class="bg-gray-100 p-4 mb-4 rounded">
       <h3 class="font-bold mb-2">Debug Information:</h3>
       <pre>{{ $page.props.debugSql }}</pre>
+
+      <pre>分頁數據: {{ pagination }}</pre>
+      <pre>Records Meta: {{ records?.meta }}</pre>
       <!-- <pre>{{ records.data[0] }}</pre> -->
       <!-- <div v-for="record in records.data" :key="record.id" class="mb-2">
         <pre>uen_score_id:{{ record.id }}</pre>
@@ -486,6 +492,8 @@ defineExpose({
           v-model:page-size="pagination.per_page"
           :total="pagination.total"
           :page-sizes="[10, 20, 30, 50]"
+          :pager-count="7"
+          :background="true"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
