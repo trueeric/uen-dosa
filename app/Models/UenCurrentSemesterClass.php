@@ -8,6 +8,11 @@ class UenCurrentSemesterClass extends Model {
   protected $connection = 'uen_students_db';
   protected $table      = 'v_uen_current_semester_classes';
 
+  // 重要：新增這個方法來處理 Route Model Binding
+  public function getRouteKeyName() {
+    return 'class_id';
+  }
+
   // 指定主鍵
   protected $primaryKey = 'class_id';
 
@@ -15,7 +20,7 @@ class UenCurrentSemesterClass extends Model {
   protected $isReadOnly = true;
 
   // 主鍵非自增
-  public $incrementing = false;
+  // public $incrementing = false;
 
   // 主鍵型別為字串
   protected $keyType = 'string';
@@ -33,11 +38,6 @@ class UenCurrentSemesterClass extends Model {
   //   'homeroom_teacher',
   //   'grade_sort',
   // ];
-
-  // 重要：新增這個方法來處理 Route Model Binding
-  public function getRouteKeyName() {
-    return 'class_id';
-  }
 
   // 防止資料被修改（因為是唯讀視圖）
   public static function boot() {
