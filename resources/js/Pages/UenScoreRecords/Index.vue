@@ -11,6 +11,7 @@ import {
   CircleClose,
 } from "@element-plus/icons-vue";
 import { useDateFormatter } from "@/composables/useDateFormatter";
+import BasePagination from "@/components/BasePagination.vue";
 
 // 定義 props
 const props = defineProps({
@@ -279,6 +280,13 @@ onMounted(() => {
   }
 });
 
+// 處理分頁更新
+const handlePaginationUpdate = (newPagination) => {
+  pagination.current_page = newPagination.current_page;
+  pagination.per_page = newPagination.per_page;
+  handleSearch();
+};
+
 // 導出需要在模板中使用的變量和方法
 defineExpose({
   debug,
@@ -484,21 +492,12 @@ defineExpose({
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- 分頁 -->
-      <div class="flex justify-end p-4">
-        <el-pagination
-          v-model:current-page="pagination.current_page"
-          v-model:page-size="pagination.per_page"
-          :total="pagination.total"
-          :page-sizes="[10, 20, 30, 50]"
-          :pager-count="7"
-          :background="true"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
+      <!-- 使用分頁組件 -->
+      <BasePagination
+        v-model:pagination="pagination"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
