@@ -3,6 +3,7 @@
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UenScoreRecordController;
+use App\Http\Controllers\UenScoreTypeSubTotalController;
 use App\Http\Controllers\UenStudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,11 @@ Route::middleware('auth')->group(function () {
       'update'  => 'uen-score-records.update',
       'destroy' => 'uen-score-records.destroy',
     ]);
+
+  // 榮譽競賽評分彙總表
+  Route::get('/uen-score-type-sub-total', [UenScoreTypeSubTotalController::class, 'index'])
+    ->name('uen-score-type-sub-total.index');
+
 });
 
 require __DIR__ . '/auth.php';
