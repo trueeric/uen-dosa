@@ -18,8 +18,8 @@ class UenScoreRecordController extends Controller {
     // 查詢條件
     $query = UenScoreRecord::query()
       ->withTargetInfo()
-      ->when($request->filled('target_no'), function ($query) use ($request) {
-        return $query->where('target_no', 'like', "%{$request->target_no}%");
+      ->when($request->filled('class_no'), function ($query) use ($request) {
+        return $query->where('class_no', 'like', "%{$request->class_no}%");
       })
       ->when($request->filled(['start_date', 'end_date']), function ($query) use ($request) {
         return $query->whereBetween('score_date', [
@@ -73,7 +73,7 @@ class UenScoreRecordController extends Controller {
           'to'           => $records->lastItem(),
         ],
       ],
-      'filters'         => $request->only(['target_no', 'start_date', 'end_date', 'week_no']),
+      'filters'         => $request->only(['class_no', 'start_date', 'end_date', 'week_no']),
       'weekOptions'     => $weekOptions,
       'currentSemester' => $currentSemester,
       'debugSql'        => $debugSql,
@@ -119,10 +119,10 @@ class UenScoreRecordController extends Controller {
   public function store(Request $request) {
     // 表單驗證
     $validated = $request->validate([
-      'target_no' => 'required|string|max:255',
-      'semester'  => 'required|string|max:255',
-      'name'      => 'required|string|max:255',
-      'points'    => 'required|integer',
+      'class_no' => 'required|string|max:255',
+      'semester' => 'required|string|max:255',
+      'name'     => 'required|string|max:255',
+      'points'   => 'required|integer',
     ]);
 
     // 保存資料

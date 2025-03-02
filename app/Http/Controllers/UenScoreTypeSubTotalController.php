@@ -14,14 +14,14 @@ class UenScoreTypeSubTotalController extends Controller {
 
     // 獲取班級列表
     $classes = DB::table('v_uen_current_semester_score_type_sub_total')
-      ->select(DB::raw('e_class'))
-      ->groupBy('e_class') // 使用 groupBy 而不是 distinct
-      ->orderBy('e_class')
+      ->select(DB::raw('class_no'))
+      ->groupBy('class_no') // 使用 groupBy 而不是 distinct
+      ->orderBy('class_no')
       ->get()
       ->map(function ($item) {
         return [
-          'label' => $item->e_class,
-          'value' => $item->e_class,
+          'label' => $item->class_no,
+          'value' => $item->class_no,
         ];
       })
       ->values()
@@ -43,7 +43,7 @@ class UenScoreTypeSubTotalController extends Controller {
       ->all();
 
 // 篩選條件
-    $selectedClass = $request->input('class');
+    $selectedClass = $request->input('class_no');
     $selectedWeek  = $request->input('week_no');
 
     // 構建查詢
@@ -51,7 +51,7 @@ class UenScoreTypeSubTotalController extends Controller {
 
     // 應用篩選條件
     if ($selectedClass) {
-      $query->where('e_class', $selectedClass);
+      $query->where('class_no', $selectedClass);
     }
 
     if ($selectedWeek) {
@@ -62,7 +62,7 @@ class UenScoreTypeSubTotalController extends Controller {
     $total = $query->count();
 
     // 獲取分頁數據
-    $records = $query->orderBy('e_class')
+    $records = $query->orderBy('class_no')
       ->orderBy('week_no')
       ->skip(($page - 1) * $perPage)
       ->take($perPage)
@@ -78,7 +78,7 @@ class UenScoreTypeSubTotalController extends Controller {
       ],
       'classes' => $classes,
       'weeks'   => $weeks,
-      'filters' => $request->only(['class', 'week_no']),
+      'filters' => $request->only(['class_no', 'week_no']),
     ]);
   }
 }
