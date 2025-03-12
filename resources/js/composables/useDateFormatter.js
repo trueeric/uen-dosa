@@ -22,6 +22,7 @@ export const useDateFormatter = () => {
       d.format("YYYY-MM-DD HH:mm:ss"),
       d.format("MMDD HHmm"),
       d.format("MMDD"),
+      d.format("DD"),
     ];
   };
 

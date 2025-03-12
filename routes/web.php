@@ -41,17 +41,12 @@ Route::middleware('auth')->group(function () {
   Route::get('/uen-students/create', [UenStudentController::class, 'create'])
     ->name('uen-students.create');
 
-  // 榮譽競賽評分 - 完整的資源路由
-  Route::resource('uen-score-records', UenScoreRecordController::class)
-    ->names([
-      'index'   => 'uen-score-records.index',
-      'create'  => 'uen-score-records.create',
-      'store'   => 'uen-score-records.store',
-      'show'    => 'uen-score-records.show',
-      'edit'    => 'uen-score-records.edit',
-      'update'  => 'uen-score-records.update',
-      'destroy' => 'uen-score-records.destroy',
-    ]);
+  // 榮譽競賽評分 - 標準資源路由
+  Route::resource('uen-score-records', UenScoreRecordController::class);
+
+  // 添加軟刪除的恢復路由
+  Route::post('/uen-score-records/{id}/restore', [UenScoreRecordController::class, 'restore'])
+    ->name('uen-score-records.restore');
 
   // 榮譽競賽評分彙總表
   Route::get('/uen-score-type-sub-total', [UenScoreTypeSubTotalController::class, 'index'])

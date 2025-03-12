@@ -2,12 +2,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\UenCurrentSemester;
+use App\Models\UenCurrentSemesterClass;
+use App\Models\UenCurrentSemesterStudent;
+use App\Models\UenScoreItem;
 use App\Models\UenScoreRecord;
+use App\Models\UenScoreRecordView;
+use App\Models\UenUserMapping;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class UenScoreRecordController extends Controller {
+
+  /**
+   * 獲取當前用戶今日的記錄
+   * 這個私有方法應該放在控制器類中，供其他方法調用
+   */
+  private function getUserTodayRecords($userId) {
+    return UenScoreRecordView::where('recorded_by', $userId)
+      ->whereDate('score_date', now()->toDateString())
+      ->latest('id')
+      ->get();
+  }
+
   /**
    * Display a listing of the resource.
    */
@@ -16,8 +32,7 @@ class UenScoreRecordController extends Controller {
     $currentSemester = UenCurrentSemester::first()->semester;
 
     // 查詢條件
-    $query = UenScoreRecord::query()
-      ->withTargetInfo()
+    $query = UenScoreRecordView::query()
       ->when($request->filled('class_no'), function ($query) use ($request) {
         return $query->where('class_no', 'like', "%{$request->class_no}%");
       })
@@ -32,8 +47,7 @@ class UenScoreRecordController extends Controller {
       });
 
     // 獲取周別選項 - 使用視圖
-    $weekOptions = DB::table('v_uen_current_semester_score_record')
-      ->select('week_no')
+    $weekOptions = UenScoreRecordView::select('week_no')
       ->distinct()
       ->whereNotNull('week_no')
       ->orderBy('week_no')
@@ -79,37 +93,33 @@ class UenScoreRecordController extends Controller {
       'debugSql'        => $debugSql,
     ]);
   }
+
   /**
    * Show the form for creating a new resource.
    */
   public function create() {
 
-    // 先獲取當前學期的 first_monday
-    $currentSemester = UenCurrentSemester::first()->semester;
+    $userId = auth()->id();
 
-    // 獲取周別選項
-    $weekOptions = UenScoreRecord::query()
-      ->select([
-        DB::raw('DISTINCT FLOOR(DATEDIFF(score_date, (SELECT first_monday FROM std_basic.v_uen_current_semester WHERE semester = uen_score_records.semester LIMIT 1)) / 7) + 1 as week_no'),
-      ])
-      ->where('semester', $currentSemester->semester)
-      ->whereNotNull('score_date')
-      ->orderBy('week_no')
-      ->pluck('week_no')
-      ->filter() // 過濾掉 null 值
-      ->map(function ($weekNo) {
-        return [
-          'label' => "第{$weekNo}周",
-          'value' => $weekNo,
-        ];
-      })
-      ->values()
-      ->all();
+    $userInfo = UenUserMapping::getCurrentUserInfo($userId);
+    // 獲取所有分數項目（不進行權限過濾）
 
-    // 返回新增頁面所需資料
+    // 使用 scopeGetScoreItems 查詢符合權限的項目
+    $scoreItems = UenScoreItem::getScoreItems($userId)->get();
+    // dd($scoreItems);
+
+    $semesterInfo = UenCurrentSemester::first();
+
+    // 獲取當前用戶今日的記錄
+    $userTodayRecords = $this->getUserTodayRecords($userId);
+
+    // 返回更多調試信息
     return Inertia::render('UenScoreRecords/Create', [
-      'weekOptions'     => $weekOptions,
-      'currentSemester' => $currentSemester,
+      'semesterInfo'     => $semesterInfo,
+      'scoreItems'       => $scoreItems,
+      'userInfo'         => $userInfo,
+      'userTodayRecords' => $userTodayRecords,
+
     ]);
   }
 
@@ -117,19 +127,65 @@ class UenScoreRecordController extends Controller {
    * Store a newly created resource in storage.
    */
   public function store(Request $request) {
-    // 表單驗證
-    $validated = $request->validate([
-      'class_no' => 'required|string|max:255',
-      'semester' => 'required|string|max:255',
-      'name'     => 'required|string|max:255',
-      'points'   => 'required|integer',
+
+    $data = $request->validate([
+      'target_no'   => 'required|string',
+      'target_type' => 'required|string',
+      'score_no'    => 'required|string',
+      'semester'    => 'required|string',
+      'score_date'  => 'required|date',
+      'scored_by'   => 'nullable|string',
+      'description' => 'nullable|string',
+
     ]);
+    // dd($data);
+    // 將 target_no 轉換為大寫
+    $data['target_no'] = strtoupper($data['target_no']);
 
-    // 保存資料
-    UenScoreRecord::create($validated);
+    // 檢查今日是否已有相同記錄
+    $existingRecord = UenScoreRecord::where('target_no', $data['target_no'])
+      ->where('score_no', $data['score_no'])
+      ->whereDate('score_date', now())
+      ->first();
 
-    // 重定向到列表頁
-    return redirect()->route('uen-score-records.index')->with('success', '記錄新增成功');
+    if ($existingRecord) {
+      return redirect()->back()->with('error', '今日已有相同班級/學號和項目代碼的記錄，請勿重複輸入');
+    }
+
+// 根據 target_type 和 target_no 找到對應的 target_id
+    $targetId = null;
+
+    if ($request->target_type === 'class') {
+      $class = UenCurrentSemesterClass::where('class_no', $request->target_no)->first();
+      if ($class) {
+        $targetId = $class->class_id;
+      } else {
+        return response()->json(['message' => '找不到指定的班級'], 404);
+      }
+    } else if ($request->target_type === 'student') {
+      $student = UenCurrentSemesterStudent::where('student_no', $request->target_no)->first();
+      if ($student) {
+        $targetId = $student->student_id;
+      } else {
+        return response()->json(['message' => '找不到指定的學生'], 404);
+      }
+    }
+
+// 創建記錄
+    // 確保必要欄位有值
+    $data['target_id']   = $targetId;
+    $data['recorded_by'] = $data['recorded_by'] ?? auth()->id();
+    $data['status']      = $data['status'] ?? 'pending';
+
+    $scoreRecord = UenScoreRecord::create($data);
+
+    // 獲取當前用戶今日的記錄
+    $userTodayRecords = $this->getUserTodayRecords(auth()->id());
+
+    return redirect()->back()->with([
+      'success'          => '成績記錄已成功創建',
+      'userTodayRecords' => $userTodayRecords,
+    ]);
   }
 
   /**
@@ -139,6 +195,23 @@ class UenScoreRecordController extends Controller {
     // 返回詳細資料頁面
     return Inertia::render('UenScoreRecords/Show', [
       'record' => $uen_score_record->load('targetInfo'),
+    ]);
+  }
+
+  public function destroy(UenScoreRecord $uen_score_record) {
+    // 檢查權限（可選）
+    // $this->authorize('delete', $uen_score_record);
+
+    // 軟刪除記錄
+    $uen_score_record->delete();
+
+    // 獲取當前用戶今日的記錄（已排除軟刪除的記錄）
+    $userTodayRecords = $this->getUserTodayRecords(auth()->id());
+
+    // 返回成功訊息和更新後的記錄
+    return redirect()->back()->with([
+      'success'          => '記錄已成功刪除',
+      'userTodayRecords' => $userTodayRecords,
     ]);
   }
 }
